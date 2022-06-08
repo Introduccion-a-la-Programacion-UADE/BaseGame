@@ -26,6 +26,10 @@ InputState inputState;
 
 SpaceShip playerShip;
 
+TTF_Font* gamingFont;
+SDL_Surface* textSurface;
+SDL_Texture* textTexture;
+
 
 
 // Inicialización motor
@@ -41,14 +45,30 @@ void StartGame() {
 	// Color de fondo
 	SDL_SetRenderDrawColor(renderer, 60, 60, 100, 255);
 
+	// Fonts 
+	TTF_Init();
+
+	// Input
 	Input_Initialize();
 
 	
 }
 
+void InitalizeUI() {
+	SDL_Color color = { 255, 100, 0 };
+
+	string myName = "Hello World";
+
+	textSurface = TTF_RenderText_Blended(gamingFont, myName.c_str(), color);
+	textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+}
+
 // Carga de Recursos 
 
 void LoadAssets() {
+
+	// Font 
+	gamingFont = TTF_OpenFont("assets/8-bit-pusab.ttf", 20);
 
 	// Carga
 	string filename = "assets/ufo.png";
@@ -60,12 +80,15 @@ void LoadAssets() {
 	playerShip.y = 500;
 }
 
-void updateInput() {
+
+
+
+void UpdateInput() {
 
 	Input_ProcessInput(inputState);
 }
 
-void updateGame() {
+void UpdateGame() {
 
 	// Actualizacion tiempo
 	gameTime -= deltaTimeInSeconds;
@@ -108,20 +131,27 @@ void updateGame() {
 	else if (inputState.down) {
 		playerShip.y += 200 * deltaTimeInSeconds;
 	}
-	
 }
 
-void render() {
+void Render() {
 
-	// Dibujado
+	// Dibujado UFO
 	SDL_Rect dest;
 	dest.x = 300;
 	dest.y = ufoPosY;
 	SDL_QueryTexture(ufoTexture, NULL, NULL, &dest.w, &dest.h);
 	SDL_RenderCopy(renderer, ufoTexture, NULL, &dest);
 
+	// Dibujado ship
 	SpaceShip_Update(playerShip, renderer);
 
+	// Dibujado UI
+	SDL_Rect uiTitleRect;
+	uiTitleRect.x = 500;
+	uiTitleRect.y = 40;
+	uiTitleRect.w = 100;
+	uiTitleRect.h = 30;
+	SDL_RenderCopy(renderer, textTexture, NULL, &uiTitleRect);
 
 	SDL_RenderPresent(renderer);
 }
@@ -132,6 +162,7 @@ int main(int argc, char* args[])
 
 	LoadAssets();
 
+	InitalizeUI();
 
 	bool isGameRunning = true;
 
@@ -150,9 +181,9 @@ int main(int argc, char* args[])
 		// Limpio pantalla
 		SDL_RenderClear(renderer);
 
-		updateInput();
-		updateGame();
-		render();
+		UpdateInput();
+		UpdateGame();
+		Render();
 
 		SDL_Delay(1000.0 / FPS);
 	}
