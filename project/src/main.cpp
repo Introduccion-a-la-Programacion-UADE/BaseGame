@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "Input.h"
 #include "SpaceShip.h"
+#include <string>
 
 using namespace std;
 
@@ -29,6 +30,9 @@ SpaceShip playerShip;
 TTF_Font* gamingFont;
 SDL_Surface* textSurface;
 SDL_Texture* textTexture;
+
+SDL_Surface* clockTextSurface;
+SDL_Texture* clockTextTexture;
 
 
 
@@ -61,6 +65,9 @@ void InitalizeUI() {
 
 	textSurface = TTF_RenderText_Blended(gamingFont, myName.c_str(), color);
 	textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+
+	clockTextSurface = TTF_RenderText_Blended(gamingFont, "30", color);
+	clockTextTexture = SDL_CreateTextureFromSurface(renderer, clockTextSurface);
 }
 
 // Carga de Recursos 
@@ -87,6 +94,21 @@ void UpdateInput() {
 
 	Input_ProcessInput(inputState);
 }
+
+
+void UpdateUI() {
+
+	SDL_Color color = { 255, 255, 255 };
+	int gameSeconds = floor(gameTime);
+
+	string clockText = "00:" + to_string(gameSeconds);
+
+	clockTextSurface = TTF_RenderText_Blended(gamingFont, clockText.c_str(), color); // Creamos el Surface con el texto actualizado
+	clockTextTexture = SDL_CreateTextureFromSurface(renderer, clockTextSurface); // Creamos la Textura a partir del Surface
+
+	SDL_FreeSurface(clockTextSurface); // La surface ya fue utilizada, asi que liberamos memoria para evitar un memory Leak.
+}
+
 
 void UpdateGame() {
 
@@ -153,6 +175,15 @@ void Render() {
 	uiTitleRect.h = 30;
 	SDL_RenderCopy(renderer, textTexture, NULL, &uiTitleRect);
 
+	// Dibujado Reloj
+	SDL_Rect uiClockRect;
+	uiClockRect.x = 300;
+	uiClockRect.y = 400;
+	uiClockRect.w = 100;
+	uiClockRect.h = 30;
+	SDL_RenderCopy(renderer, clockTextTexture, NULL, &uiClockRect); // Dibujamos en pantalla la textura con el reloj actualizado
+	SDL_DestroyTexture(clockTextTexture); // La Textura ya fue utilizada, asi que liberamos memoria para evitar un memory Leak.
+
 	SDL_RenderPresent(renderer);
 }
 
@@ -181,8 +212,14 @@ int main(int argc, char* args[])
 		// Limpio pantalla
 		SDL_RenderClear(renderer);
 
+		// Update Input
 		UpdateInput();
+
+		// Update lógica y UI
 		UpdateGame();
+		UpdateUI();
+
+		// Render
 		Render();
 
 		SDL_Delay(1000.0 / FPS);
