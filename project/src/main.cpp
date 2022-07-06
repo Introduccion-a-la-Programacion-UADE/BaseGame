@@ -5,6 +5,7 @@
 #include "Utils.h"
 #include "Input.h"
 #include "SpaceShip.h"
+#include "Rock.h"
 #include <string>
 
 using namespace std;
@@ -34,7 +35,7 @@ SDL_Texture* textTexture;
 SDL_Surface* clockTextSurface;
 SDL_Texture* clockTextTexture;
 
-
+Rock* rockA;
 
 // Inicialización motor
 void StartGame() {
@@ -55,7 +56,9 @@ void StartGame() {
 	// Input
 	Input_Initialize();
 
-	
+	rockA = new Rock(renderer);
+	rockA->SetPosition(200, 200);
+
 }
 
 void InitalizeUI() {
@@ -153,6 +156,8 @@ void UpdateGame() {
 	else if (inputState.down) {
 		playerShip.y += 200 * deltaTimeInSeconds;
 	}
+
+	rockA->Update(deltaTimeInSeconds);
 }
 
 void Render() {
@@ -183,6 +188,9 @@ void Render() {
 	uiClockRect.h = 30;
 	SDL_RenderCopy(renderer, clockTextTexture, NULL, &uiClockRect); // Dibujamos en pantalla la textura con el reloj actualizado
 	SDL_DestroyTexture(clockTextTexture); // La Textura ya fue utilizada, asi que liberamos memoria para evitar un memory Leak.
+
+
+	rockA->Draw(renderer);
 
 	SDL_RenderPresent(renderer);
 }

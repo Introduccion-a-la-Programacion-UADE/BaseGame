@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClCompile Include="..\src\Input.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\Rock.cpp" />
     <ClCompile Include="..\src\Source.cpp" />
     <ClCompile Include="..\src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Input.h" />
+    <ClInclude Include="..\src\Rock.h" />
     <ClInclude Include="..\src\SpaceShip.h" />
     <ClInclude Include="..\src\Utils.h" />
   </ItemGroup>
